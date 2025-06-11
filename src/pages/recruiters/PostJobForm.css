@@ -1,0 +1,133 @@
+/* Main Form Container */
+.form-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Form Header */
+.form-container h2 {
+  color: #2d3748;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 0.5rem;
+}
+
+/* Form Groups */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #4a5568;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+/* Input Fields */
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  background-color: #f8fafc;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+}
+
+/* Dynamic Array Fields */
+.array-field {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.array-field input {
+  flex: 1;
+}
+
+.add-field-btn {
+  padding: 0 1rem;
+  background: #edf2f7;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #4a5568;
+}
+
+.add-field-btn:hover {
+  background: #e2e8f0;
+}
+
+/* Action Buttons */
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+  gap: 1rem;
+}
+
+.btn-delete,
+.btn-modify,
+.btn-view-all,
+.btn-submit {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-delete {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+.btn-modify {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.btn-view-all {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.btn-submit {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.btn-delete:hover {
+  background-color: #fecaca;
+}
+
+.btn-modify:hover {
+  background-color: #fde68a;
+}
+
+.btn-view-all:hover {
+  background-color: #bfdbfe;
+}
+
+.btn-submit:hover {
+  background-color: #bbf7d0;
+}
