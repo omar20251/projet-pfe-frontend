@@ -21,9 +21,60 @@ const JobDetails = () => {
   const [error, setError] = useState<string | null>(null);
   const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  function parseQCMString(qcmString: string) {
+    const questions = [];
+    const qcmBlocks = qcmString
+      .trim()
+      .split(/\*\*QCM \d+:/i) // split by each QCM block title
+      .map((block) => block.trim())
+      .filter((block) => block); // remove empty blocks
+
+    let id = 1;
+
+    for (const block of qcmBlocks) {
+      const lines = block.split("\n").map((line) => line.trim());
+
+      const questionLineIndex = lines.findIndex(
+        (line) => /^[A-D]\)/.test(line) // start of options
+      );
+
+      const questionText = lines.slice(0, questionLineIndex).join(" ");
+      const optionLines = lines
+        .slice(questionLineIndex)
+        .filter((line) => /^[A-D]\)/.test(line));
+
+      const optionsMap: Record<string, string> = {};
+      for (const line of optionLines) {
+        const match = line.match(/^([A-D])\)\s+`?(.*?)`?$/); // support backticks
+        if (match) {
+          const [, letter, text] = match;
+          optionsMap[letter] = text;
+        }
+      }
+
+      const correctLetterMatch = block.match(/Correct answer:\s*([A-D])\)/i);
+      const correctLetter = correctLetterMatch?.[1];
+
+      const options = ["A", "B", "C", "D"].map((l) => optionsMap[l] ?? "");
+
+      if (questionText) {
+        questions.push({
+          id: id++,
+          titre: `QCM ${id - 1}`,
+          question: questionText.trim(),
+          options,
+          correctAnswer: correctLetter
+            ? "ABCD".indexOf(correctLetter)
+            : undefined,
+        });
+      }
+    }
+
+    return questions;
+  }
 
   const generateTests = async () => {
-    const prompt = `Generate 3 QCMs about "${job.competences.join(
+    const prompt = `Generate 3 QCMs about "${job?.competences.join(
       ", "
     )}" lists senior level`;
     try {
@@ -52,62 +103,64 @@ const JobDetails = () => {
       const data = await response.json();
       const generatedText = data.choices[0]?.message?.content;
       const questions = parseQCMString(generatedText);
-
-      function parseQCMString(qcmString: string) {
-        const questions = [];
-        const qcmBlocks = qcmString.trim().split(/\n{2,}/); // split by double newlines
-        let id = 1;
-
-        for (const block of qcmBlocks) {
-          const lines = block
-            .trim()
-            .split("\n")
-            .map((line) => line.trim());
-          const titleMatch = lines[0].match(/\*\*(.*?)\*\*/);
-          const titre = titleMatch ? titleMatch[1] : `QCM ${id}`;
-          const questionText = lines.find(
-            (line) =>
-              !line.startsWith("**") && !line.startsWith("Correct answer:")
-          );
-
-          const optionsMap: Record<string, string> = {};
-          for (const line of lines) {
-            const match = line.match(/^([A-D])\)\s+(.*)$/);
-            if (match) {
-              const [, letter, text] = match;
-              optionsMap[letter] = text;
-            }
-          }
-
-          const correctLetterMatch = block.match(
-            /Correct answer:\s+([A-D])\)/i
-          );
-          const correctLetter = correctLetterMatch?.[1];
-          const options = ["A", "B", "C", "D"].map((l) => optionsMap[l] ?? "");
-
-          if (questionText) {
-            questions.push({
-              id: id++,
-              titre,
-              question: questionText,
-              options,
-              correctAnswer: correctLetter
-                ? "ABCD".indexOf(correctLetter)
-                : undefined,
-            });
-          }
-        }
-
-        return questions;
-      }
+      console.log(questions);
 
       if (generatedText) {
-        // Tu peux stocker le QCM dans le state ou le backend
-        console.log("Generated QCMs:", generatedText);
-        // Redirection vers une nouvelle page si tu veux
+        localStorage.setItem(
+          "qcm_questions",
+          JSON.stringify({
+            titre: "QCM 1",
+            questions: [
+              {
+                id: "1",
+                question:
+                  "Quelle est la fonction principale du Laravel Service Container ?",
+                type: "single",
+                options: [
+                  "Gérer les requêtes HTTP",
+                  "Gérer les connexions à la base de données",
+                  "Résoudre les dépendances et injecter les instances",
+                  "Autre",
+                ],
+                correctAnswers: [
+                  "Résoudre les dépendances et injecter les instances",
+                ],
+                points: 1,
+              },
+              {
+                id: "2",
+                question:
+                  "Quel est le comportement par défaut de la méthode `save()` d'Eloquent ?",
+                type: "single",
+                options: [
+                  "Toujours insérer",
+                  "Toujours mettre à jour",
+                  "Insérer si nouveau, mettre à jour sinon",
+                  "Lancer une exception si existant",
+                ],
+                correctAnswers: ["Insérer si nouveau, mettre à jour sinon"],
+                points: 1,
+              },
+              {
+                id: "3",
+                question:
+                  "Quel est le but de la méthode `terminate` dans un middleware Laravel ?",
+                type: "single",
+                options: [
+                  "Gérer les exceptions",
+                  "Effectuer des tâches après la réponse",
+                  "Authentifier la requête",
+                  "Logger la requête et la réponse",
+                ],
+                correctAnswers: ["Effectuer des tâches après la réponse"],
+                points: 1,
+              },
+            ],
+          })
+        );
+
         navigate("/tests");
         console.log("questions", questions);
-        localStorage.setItem("qcm_questions", JSON.stringify(questions));
 
         //navigate('/tests/generated', { state: { questions: generatedText } });
       } else {

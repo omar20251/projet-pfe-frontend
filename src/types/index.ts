@@ -40,36 +40,35 @@ export interface JobOffer {
 export interface Test {
   id: string;
   titre: string;
-  dureeMinutes: number;
-  categorie: string;
+    categorie?: string;
   description?: string;
+  dureeMinutes: number;
   questions: Question[];
 }
 
-
 export interface Question {
   id: string;
-  text: string;
+  ordre: number;
+  enonce: string;
+
   type: 'single' | 'multiple' | 'text';
-  options?: string[];               // pour les questions à choix
-  correctAnswers?: string | string[]; // réponse(s) correcte(s)
-  points: number;
+  options?: string[];
+  correctAnswers: string | string[];
 }
-
-
 export interface TestSubmission {
   id: string;
   testId: string;
   candidateId: string;
-  startTime: Date;
-  endTime?: Date;
+  testTitle: string;
+  startTime: Date | string;
+  endTime: Date | string;
   answers: {
     questionId: string;
-    answer: string | string[]; // Based on question type
+    answer: string | string[];
   }[];
-  score?: number;
-  maxScore?: number;
-  percentage?: number;
+  score: number;
+  maxScore: number;
+  percentage: number;
 }
 
 export interface Feedback {
